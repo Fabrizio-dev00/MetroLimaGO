@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.compose.ui:ui-graphics-android:1.9.0@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../Program Files/Java/jdk-20/caches/8.11.1/transforms/31a42ef0b489e66720264a5a64a48835/transformed/ui-graphics-release/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../Program Files/Java/jdk-20/caches/8.11.1/transforms/31a42ef0b489e66720264a5a64a48835/transformed/ui-graphics-release/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../Program Files/Java/jdk-20/caches/8.11.1/transforms/31a42ef0b489e66720264a5a64a48835/transformed/ui-graphics-release/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../Program Files/Java/jdk-20/caches/modules-2/files-2.1/androidx.compose.ui/ui-graphics-android/1.9.0/386c99b478cdab09deba906423fdc0febe9b47a9/ui-graphics-android-1.9.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Program Files/Java/jdk-20/caches/modules-2/files-2.1/androidx.compose.ui/ui-graphics-android/1.9.0/c3ceafbd101db24642260ba6097ae11885384b23/ui-graphics-1.9.0-samples-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
