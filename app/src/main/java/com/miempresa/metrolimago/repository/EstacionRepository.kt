@@ -2,10 +2,15 @@ package com.miempresa.metrolimago.repository
 
 import com.miempresa.metrolimago.data.dao.EstacionDao
 import com.miempresa.metrolimago.model.Estacion
+import kotlinx.coroutines.flow.Flow
 
 class EstacionRepository(private val estacionDao: EstacionDao) {
 
-    suspend fun obtenerEstaciones(): List<Estacion> = estacionDao.obtenerEstaciones()
+    fun obtenerEstaciones(): Flow<List<Estacion>> = estacionDao.obtenerEstaciones()
+
+    suspend fun insertar(estacion: Estacion) {
+        estacionDao.insertarEstaciones(estacion)
+    }
 
     suspend fun insertarEjemplo() {
         val estaciones = listOf(
@@ -15,4 +20,7 @@ class EstacionRepository(private val estacionDao: EstacionDao) {
         )
         estaciones.forEach { estacionDao.insertarEstaciones(it) }
     }
+
+    fun buscarPorNombre(nombre: String): Flow<List<Estacion>> =
+        estacionDao.buscarPorNombre("%$nombre%")
 }
