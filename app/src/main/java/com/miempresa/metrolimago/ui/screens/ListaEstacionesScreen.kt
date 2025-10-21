@@ -1,5 +1,6 @@
 package com.miempresa.metrolimago.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,16 +17,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 
-
-
 @Composable
-fun ListaEstacionesScreen(viewModel: EstacionViewModel) {
+fun ListaEstacionesScreen(
+    viewModel: EstacionViewModel,
+    navController: NavHostController
+) {
     val estaciones by viewModel.estaciones.collectAsState(initial = emptyList())
-    val contexto = LocalContext.current
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+
         TextField(
             value = viewModel.filtro.collectAsState().value,
             onValueChange = { viewModel.setFiltro(it) },
@@ -35,16 +42,24 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         LazyColumn {
             items(estaciones) { estacion ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = 4.dp)
+                        .clickable {
+                            navController.navigate("detalleEstacion/${estacion.nombre}")
+                        },
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text(estacion.nombre, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = estacion.nombre,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                         Text("Línea ${estacion.linea}")
                         Text(estacion.distrito, color = Color.Gray)
                     }
