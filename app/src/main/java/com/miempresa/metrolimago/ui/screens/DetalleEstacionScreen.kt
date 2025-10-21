@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DetalleEstacionScreen(
     nombreEstacion: String = "María Auxiliadora",
-    descripcion: String = "Estación moderna con conexión a líneas de bus y servicios cercanos."
+    descripcion: String = "Estación moderna con conexión a líneas de bus y servicios cercanos.",
+    id: Int?
 ) {
     Column(
         modifier = Modifier
