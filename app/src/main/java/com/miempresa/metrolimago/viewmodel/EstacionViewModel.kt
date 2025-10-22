@@ -3,14 +3,10 @@ package com.miempresa.metrolimago.viewmodel
 import androidx.lifecycle.*
 import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.repository.EstacionRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import android.util.Log
 
 class EstacionViewModel(private val repository: EstacionRepository) : ViewModel() {
-
 
     private val _filtro = MutableStateFlow("")
     val filtro: StateFlow<String> = _filtro
@@ -18,16 +14,10 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
     val estaciones = _filtro.flatMapLatest { nombre ->
         if (nombre.isEmpty()) repository.obtenerEstaciones()
         else repository.buscarPorNombre(nombre)
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-
-    private val _mensaje = MutableStateFlow<String?>(null)
-    val mensaje: StateFlow<String?> = _mensaje
-
+    private val _estacionesRemoto = MutableStateFlow<List<Estacion>>(emptyList())
+    val estacionesRemoto: StateFlow<List<Estacion>> = _estacionesRemoto
 
     fun insertar(estacion: Estacion) = viewModelScope.launch {
         repository.insertar(estacion)
@@ -41,29 +31,16 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
         repository.insertarEjemplo()
     }
 
-
-    fun cargarDesdeAPI() = viewModelScope.launch {
-        _isLoading.value = true
-        try {
-            val estacionesRemotas = repository.obtenerEstacionesRemotas()
-            estacionesRemotas.forEach { remota ->
-                val estacionLocal = Estacion(
-                    nombre = remota.nombre,
-                    linea = remota.linea,
-                    distrito = remota.distrito
-                )
-                repository.insertar(estacionLocal)
-                Log.d("EstacionViewModel", "Insertada: ${remota.nombre}")
+    fun cargarDesdeApi() {
+        viewModelScope.launch {
+            try {
+                val data = repository.obtenerEstacionesRemotas()
+                _estacionesRemoto.value = data
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            _mensaje.value = "Sincronización completada (${estacionesRemotas.size} estaciones)"
-        } catch (e: Exception) {
-            Log.e("EstacionViewModel", "Error al cargar desde API", e)
-            _mensaje.value = "Error: ${e.message}"
-        } finally {
-            _isLoading.value = false
         }
     }
-
 
     companion object {
         class Factory(private val repository: EstacionRepository) :
