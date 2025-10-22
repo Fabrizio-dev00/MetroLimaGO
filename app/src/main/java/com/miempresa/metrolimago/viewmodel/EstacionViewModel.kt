@@ -31,11 +31,10 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
         repository.insertarEjemplo()
     }
 
-    // 🚀 Nueva función para traer datos desde MockAPI (Retrofit)
     fun cargarDesdeApi() {
         viewModelScope.launch {
             try {
-                val data = repository.obtenerEstacionesRemoto()
+                val data = repository.obtenerEstacionesRemotas()
                 _estacionesRemoto.value = data
             } catch (e: Exception) {
                 e.printStackTrace()

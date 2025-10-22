@@ -7,10 +7,12 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.room.Room
+import com.miempresa.metrolimago.data.MetroLimaDatabase
 import com.miempresa.metrolimago.navigation.AppNavigation
 import com.miempresa.metrolimago.repository.EstacionRepository
 import com.miempresa.metrolimago.ui.theme.MetroLimaGOTheme
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
+import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
     private val viewModel: EstacionViewModel by viewModels {
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MetroLimaGOTheme {
-                AppNavigation()
+                AppNavigation(viewModel)
             }
         }
     }
