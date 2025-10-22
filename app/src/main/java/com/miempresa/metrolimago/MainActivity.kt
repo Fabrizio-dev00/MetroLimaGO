@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             "metro_lima_db"
         ).build()
         val repository = EstacionRepository(db.estacionDao())
-        EstacionViewModel.Factory(repository)
+        EstacionViewModel.Companion.Factory(repository) // ✅ O simplemente EstacionViewModel.Factory(repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,10 +41,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MetroLimaGOTheme {
-        AppNavigation()
-    }
-}
