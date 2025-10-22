@@ -3,9 +3,7 @@ package com.miempresa.metrolimago.viewmodel
 import androidx.lifecycle.*
 import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.repository.EstacionRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class EstacionViewModel(private val repository: EstacionRepository) : ViewModel() {
@@ -13,39 +11,34 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
     private val _filtro = MutableStateFlow("")
     val filtro: StateFlow<String> = _filtro
 
-    // 🔹 Estado de carga (para el indicador CircularProgressIndicator)
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    // 🔹 Lista de estaciones (filtradas o todas)
     val estaciones = _filtro.flatMapLatest { nombre ->
         if (nombre.isEmpty()) repository.obtenerEstaciones()
         else repository.buscarPorNombre(nombre)
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // 🔹 Insertar una estación
+    private val _estacionesRemoto = MutableStateFlow<List<Estacion>>(emptyList())
+    val estacionesRemoto: StateFlow<List<Estacion>> = _estacionesRemoto
+
     fun insertar(estacion: Estacion) = viewModelScope.launch {
         repository.insertar(estacion)
     }
 
-    // 🔹 Actualizar el filtro del buscador
     fun setFiltro(nombre: String) {
         _filtro.value = nombre
     }
 
-    // 🔹 Insertar datos de ejemplo (ya existente)
     fun insertarEjemplo() = viewModelScope.launch {
         repository.insertarEjemplo()
     }
 
-    // ✅ NUEVO: Cargar datos desde la API y guardarlos en Room
-    fun cargarDesdeAPI() {
+    // 🚀 Nueva función para traer datos desde MockAPI (Retrofit)
+    fun cargarDesdeApi() {
         viewModelScope.launch {
-            _isLoading.value = true  // Muestra el indicador de carga
             try {
-                repository.sincronizarDesdeAPI()
-            } finally {
-                _isLoading.value = false // Oculta el indicador cuando termina
+                val data = repository.obtenerEstacionesRemoto()
+                _estacionesRemoto.value = data
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

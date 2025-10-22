@@ -21,7 +21,6 @@ fun ListaEstacionesScreen(
     viewModel: EstacionViewModel,
     navController: NavHostController
 ) {
-    // 🔹 Observamos los estados del ViewModel
     val estaciones by viewModel.estaciones.collectAsState(initial = emptyList())
     val filtro by viewModel.filtro.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -42,7 +41,6 @@ fun ListaEstacionesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 CAMPO DE BÚSQUEDA
         TextField(
             value = filtro,
             onValueChange = { viewModel.setFiltro(it) },
@@ -52,7 +50,6 @@ fun ListaEstacionesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 INDICADOR DE CARGA
         if (isLoading) {
             Box(
                 modifier = Modifier
@@ -63,7 +60,7 @@ fun ListaEstacionesScreen(
                 CircularProgressIndicator()
             }
         } else {
-            // 🔹 LISTA DE ESTACIONES DESDE ROOM
+
             LazyColumn {
                 items(estaciones) { estacion ->
                     Card(
