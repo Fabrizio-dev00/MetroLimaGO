@@ -3,6 +3,8 @@ package com.miempresa.metrolimago.repository
 import com.miempresa.metrolimago.data.dao.EstacionDao
 import com.miempresa.metrolimago.model.Estacion
 import kotlinx.coroutines.flow.Flow
+import com.miempresa.metrolimago.data.network.RetrofitInstance
+import com.miempresa.metrolimago.model.EstacionRemota
 
 class EstacionRepository(private val estacionDao: EstacionDao) {
 
@@ -23,4 +25,8 @@ class EstacionRepository(private val estacionDao: EstacionDao) {
 
     fun buscarPorNombre(nombre: String): Flow<List<Estacion>> =
         estacionDao.buscarPorNombre("%$nombre%")
+
+    suspend fun obtenerEstacionesRemotas(): List<EstacionRemota> {
+        return RetrofitInstance.api.obtenerEstacionesRemotas()
+    }
 }
