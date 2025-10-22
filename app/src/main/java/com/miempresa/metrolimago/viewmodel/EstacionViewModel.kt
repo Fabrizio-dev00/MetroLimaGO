@@ -13,21 +13,41 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
     private val _filtro = MutableStateFlow("")
     val filtro: StateFlow<String> = _filtro
 
+    // 🔹 Estado de carga (para el indicador CircularProgressIndicator)
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    // 🔹 Lista de estaciones (filtradas o todas)
     val estaciones = _filtro.flatMapLatest { nombre ->
         if (nombre.isEmpty()) repository.obtenerEstaciones()
         else repository.buscarPorNombre(nombre)
     }
 
+    // 🔹 Insertar una estación
     fun insertar(estacion: Estacion) = viewModelScope.launch {
         repository.insertar(estacion)
     }
 
+    // 🔹 Actualizar el filtro del buscador
     fun setFiltro(nombre: String) {
         _filtro.value = nombre
     }
 
+    // 🔹 Insertar datos de ejemplo (ya existente)
     fun insertarEjemplo() = viewModelScope.launch {
         repository.insertarEjemplo()
+    }
+
+    // ✅ NUEVO: Cargar datos desde la API y guardarlos en Room
+    fun cargarDesdeAPI() {
+        viewModelScope.launch {
+            _isLoading.value = true  // Muestra el indicador de carga
+            try {
+                repository.sincronizarDesdeAPI()
+            } finally {
+                _isLoading.value = false // Oculta el indicador cuando termina
+            }
+        }
     }
 
     companion object {
