@@ -16,6 +16,10 @@ interface EstacionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarEstaciones(vararg estaciones: Estacion)
 
+    // 🔹 NUEVO: Insertar lista completa (para sincronización desde la API)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarTodas(estaciones: List<Estacion>)
+
     @Query("SELECT * FROM estaciones WHERE nombre LIKE :nombre")
     fun buscarPorNombre(nombre: String): Flow<List<Estacion>>
 }
