@@ -29,4 +29,10 @@ class EstacionRepository(private val estacionDao: EstacionDao) {
     suspend fun obtenerEstacionesRemotas(): List<EstacionRemota> {
         return RetrofitInstance.api.obtenerEstacionesRemotas()
     }
+
+    suspend fun guardarEnLocal(estaciones: List<Estacion>) {
+        estacionDao?.let { dao ->
+            estaciones.forEach { dao.insertarEstaciones(it) }
+        }
+    }
 }

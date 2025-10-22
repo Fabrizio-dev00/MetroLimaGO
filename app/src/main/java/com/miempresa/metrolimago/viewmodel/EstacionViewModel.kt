@@ -3,9 +3,7 @@ package com.miempresa.metrolimago.viewmodel
 import androidx.lifecycle.*
 import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.repository.EstacionRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class EstacionViewModel(private val repository: EstacionRepository) : ViewModel() {
@@ -16,7 +14,10 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
     val estaciones = _filtro.flatMapLatest { nombre ->
         if (nombre.isEmpty()) repository.obtenerEstaciones()
         else repository.buscarPorNombre(nombre)
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    private val _estacionesRemoto = MutableStateFlow<List<Estacion>>(emptyList())
+    val estacionesRemoto: StateFlow<List<Estacion>> = _estacionesRemoto
 
     fun insertar(estacion: Estacion) = viewModelScope.launch {
         repository.insertar(estacion)
@@ -28,6 +29,17 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
 
     fun insertarEjemplo() = viewModelScope.launch {
         repository.insertarEjemplo()
+    }
+
+    fun cargarDesdeApi() {
+        viewModelScope.launch {
+            try {
+                val data = repository.obtenerEstacionesRemotas()
+                _estacionesRemoto.value = data
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     companion object {
