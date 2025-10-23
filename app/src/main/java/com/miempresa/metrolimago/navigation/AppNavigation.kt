@@ -15,16 +15,13 @@ fun AppNavigation(viewModel: EstacionViewModel) {
 
     NavHost(navController = navController, startDestination = "home") {
 
-
         composable("home") {
             HomeScreen(navController)
         }
 
-
         composable("listaEstaciones") {
             ListaEstacionesScreen(viewModel = viewModel, navController = navController)
         }
-
 
         composable(
             route = "detalleEstacion/{nombre}",
@@ -32,6 +29,10 @@ fun AppNavigation(viewModel: EstacionViewModel) {
         ) { backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
             DetalleEstacionScreen(nombreEstacion = nombre, viewModel = viewModel)
+        }
+
+        composable("planificador") {
+            PlanificadorScreen(viewModel = viewModel, navController = navController)
         }
     }
 }
