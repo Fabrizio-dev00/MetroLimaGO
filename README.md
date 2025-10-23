@@ -42,16 +42,15 @@ El proyecto busca facilitar la movilidad en Lima al permitir que los usuarios:
 |------|------------|
 | `main` | Versión estable del proyecto |
 | `develop` | Rama principal de desarrollo |
-| `feature/ui-inicio` | Rama de trabajo para la pantalla de inicio |
 
 ---
 
 ## 🧑‍💻 Equipo de desarrollo
-| Integrante | Rol |
-|-------------|------|
+| Integrante           | Rol |
+|----------------------|------|
 | **Fabrizio Jiménez** | Configuración de GitHub, ramas y pantalla de inicio |
-| **[Nombre 2]** | Diseño de interfaz (Figma) |
-| **[Nombre 3]** | Implementación de componentes UI |
+| **Deyby Gonzales**   | Diseño de interfaz (Figma) |
+| **Raul Infante**     | Implementación de componentes UI |
 
 ---
 
