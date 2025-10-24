@@ -25,10 +25,15 @@ import com.miempresa.metrolimago.ui.theme.MetroGradient
 import com.miempresa.metrolimago.ui.theme.ButtonColor
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
 import androidx.compose.material3.TextFieldDefaults
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController) {
+fun ListaEstacionesScreen(
+    viewModel: EstacionViewModel,
+    navController: NavHostController,
+    appViewModel: AppViewModel
+) {
 
     val estaciones by viewModel.estaciones.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -90,7 +95,7 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(listaFiltrada) { estacion ->
-                            EstacionCardRedisenada(estacion, navController)
+                            EstacionCardRedisenada(estacion, navController, appViewModel)  // ← Parámetro pasado
                         }
                     }
                 }
@@ -157,7 +162,7 @@ fun EstacionesTopBar(
 }
 
 @Composable
-fun EstacionCardRedisenada(estacion: Estacion, navController: NavHostController) {
+fun EstacionCardRedisenada(estacion: Estacion, navController: NavHostController, appViewModel: AppViewModel) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),

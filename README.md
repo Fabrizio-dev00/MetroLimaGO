@@ -57,3 +57,7 @@ El proyecto busca facilitar la movilidad en Lima al permitir que los usuarios:
 ## 🎨 Diseño en Figma
 🔗 **Enlace al prototipo:**  
 [👉 Ver diseño en Figma](https://www.figma.com/make/BeQi70cZOOdd5epKvVHq8l/MetroLima-GO-App-Structure?node-id=0-1&t=jMqdgqVBHpHJubps-1)
+
+
+## Video de la app MetroLimaGO
+https://youtu.be/ltviFPj-nVA

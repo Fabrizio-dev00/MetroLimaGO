@@ -27,6 +27,11 @@ fun AppNavigation(
             LoginScreen(navController = navController)
         }
 
+        // 🔹 Pantalla de registro ← AGREGADO
+        composable("registro") {
+            RegistroScreen(navController = navController)
+        }
+
         // 🔹 Pantalla principal
         composable("home") {
             HomeScreen(
