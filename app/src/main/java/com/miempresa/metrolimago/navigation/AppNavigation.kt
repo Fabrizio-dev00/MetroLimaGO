@@ -17,38 +17,49 @@ fun AppNavigation(viewModel: EstacionViewModel) {
         navController = navController,
         startDestination = "login"
     ) {
-
+        // Pantalla de inicio de sesión
         composable("login") {
             LoginScreen(navController)
         }
 
-
+        // Pantalla principal después del login
         composable("home") {
             HomeScreen(navController)
         }
 
+        // Mapa con estaciones
         composable("mapa") {
             MapaScreen(navController)
         }
 
+        // Lista de estaciones desde la base de datos
         composable("listaEstaciones") {
-            ListaEstacionesScreen(viewModel = viewModel, navController = navController)
+            ListaEstacionesScreen(
+                viewModel = viewModel,
+                navController = navController
+            )
         }
 
-        composable("planificador") {
-            PlanificadorScreen(viewModel = viewModel, navController = navController)
-        }
-
+        // Detalle de una estación seleccionada
         composable(
             route = "detalleEstacion/{nombre}",
             arguments = listOf(navArgument("nombre") { type = NavType.StringType })
         ) { backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-            DetalleEstacionScreen(nombreEstacion = nombre, viewModel = viewModel)
+            DetalleEstacionScreen(
+                nombreEstacion = nombre,
+                viewModel = viewModel
+            )
         }
 
+        // Pantalla de configuración
         composable("configuracion") {
             ConfiguracionScreen(navController)
+        }
+
+        // Pantalla principal con navegación general
+        composable("principal") {
+            PantallaPrincipalScreen(navController)
         }
     }
 }

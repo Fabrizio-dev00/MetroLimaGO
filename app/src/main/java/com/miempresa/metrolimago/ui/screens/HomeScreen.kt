@@ -20,8 +20,7 @@ import com.miempresa.metrolimago.ui.theme.MetroLimaGOTheme
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
-        topBar = {
-        }
+        topBar = { }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -42,6 +41,18 @@ fun HomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             AlertsCard()
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 👇 NUEVO BOTÓN PARA IR AL MAPA
+            Button(
+                onClick = { navController.navigate("mapa") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text("Ver mapa del Metro de Lima")
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }

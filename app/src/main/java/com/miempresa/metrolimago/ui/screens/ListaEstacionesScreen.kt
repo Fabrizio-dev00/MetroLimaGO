@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,15 +26,13 @@ import com.miempresa.metrolimago.ui.theme.ButtonColor
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
 import androidx.compose.material3.TextFieldDefaults
 
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController) {
 
     val estaciones by viewModel.estaciones.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
     var filtro by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -70,11 +67,21 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                listaFiltrada.isEmpty() && filtro.isEmpty() -> {
-                    Text("No se pudo cargar la lista de estaciones.", Modifier.align(Alignment.Center))
+                error != null -> {
+                    Text(
+                        text = error ?: "Error desconocido",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Red
+                    )
                 }
-                listaFiltrada.isEmpty() && filtro.isNotEmpty() -> {
-                    Text("No se encontraron estaciones con ese filtro 😢", Modifier.align(Alignment.Center))
+                listaFiltrada.isEmpty() -> {
+                    Text(
+                        text = if (filtro.isEmpty())
+                            "No se pudo cargar la lista de estaciones."
+                        else
+                            "No se encontraron estaciones con ese filtro 😢",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 else -> {
                     LazyColumn(
@@ -83,7 +90,7 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(listaFiltrada) { estacion ->
-                            EstacionCardRediseñada(estacion, navController)
+                            EstacionCardRedisenada(estacion, navController)
                         }
                     }
                 }
@@ -149,10 +156,8 @@ fun EstacionesTopBar(
     }
 }
 
-
-
 @Composable
-fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController) {
+fun EstacionCardRedisenada(estacion: Estacion, navController: NavHostController) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -174,11 +179,10 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                // Contenedor de la Línea (Simula la etiqueta azul)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Card(
                         shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = ButtonColor) // 🟢 Usando el color del tema
+                        colors = CardDefaults.cardColors(containerColor = ButtonColor)
                     ) {
                         Text(
                             text = "Línea 1",
@@ -188,7 +192,6 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    // Distrito
                     Text(
                         text = estacion.distrito,
                         color = Color.Gray,
@@ -197,7 +200,6 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                 }
             }
 
-            // Icono de Ubicación a la derecha
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = "Ubicación",
