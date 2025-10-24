@@ -20,22 +20,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.miempresa.metrolimago.model.Estacion
-import com.miempresa.metrolimago.ui.theme.BackgroundLight
-import com.miempresa.metrolimago.ui.theme.ButtonColor
-import com.miempresa.metrolimago.ui.theme.MetroGradient
-import com.miempresa.metrolimago.viewmodel.AppViewModel
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
+import com.miempresa.metrolimago.ui.theme.MetroGradient
+import com.miempresa.metrolimago.ui.theme.ButtonColor
+import com.miempresa.metrolimago.ui.theme.BackgroundLight
+import androidx.compose.material3.TextFieldDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController, appViewModel: AppViewModel) {
+fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController) {
 
-    // 1. Recolectamos los estados del ViewModel. ¡Eso es todo lo que necesitamos!
-    val estaciones by viewModel.estaciones.collectAsState() // <-- Esta lista ya viene filtrada por el ViewModel
+    val estaciones by viewModel.estaciones.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val filtro by viewModel.filtro.collectAsState() // <-- Usamos el filtro del ViewModel
+    val error by viewModel.error.collectAsState()
+    var filtro by remember { mutableStateOf("") }
 
-    // Este LaunchedEffect es correcto, se asegura de que los datos se pidan una vez.
     LaunchedEffect(Unit) {
         viewModel.cargarDesdeAPI()
     }
@@ -44,16 +43,18 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
         topBar = {
             EstacionesTopBar(
                 navController = navController,
-                filtro = filtro, // <-- Pasamos el filtro del ViewModel
-                onFiltroChange = { nuevoFiltro ->
-                    viewModel.setFiltro(nuevoFiltro) // <-- Actualizamos el filtro en el ViewModel
-                }
+                filtro = filtro,
+                onFiltroChange = { filtro = it }
             )
         },
         modifier = Modifier.background(BackgroundLight)
     ) { paddingValues ->
 
-        // 2. Ya no necesitamos 'listaFiltrada'. La lista 'estaciones' ya está filtrada.
+        val listaFiltrada = estaciones.filter {
+            it.nombre.contains(filtro, ignoreCase = true) ||
+                    it.distrito.contains(filtro, ignoreCase = true)
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,12 +67,21 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                // 3. La lógica ahora es más simple.
-                estaciones.isEmpty() && filtro.isEmpty() -> {
-                    Text("Cargando estaciones o no hay datos.", Modifier.align(Alignment.Center))
+                error != null -> {
+                    Text(
+                        text = error ?: "Error desconocido",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Red
+                    )
                 }
-                estaciones.isEmpty() && filtro.isNotEmpty() -> {
-                    Text("No se encontraron estaciones con ese filtro 😢", Modifier.align(Alignment.Center))
+                listaFiltrada.isEmpty() -> {
+                    Text(
+                        text = if (filtro.isEmpty())
+                            "No se pudo cargar la lista de estaciones."
+                        else
+                            "No se encontraron estaciones con ese filtro 😢",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 else -> {
                     LazyColumn(
@@ -79,9 +89,8 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // 4. Usamos directamente la lista 'estaciones'.
-                        items(estaciones) { estacion ->
-                            EstacionCardRediseñada(estacion, navController)
+                        items(listaFiltrada) { estacion ->
+                            EstacionCardRedisenada(estacion, navController)
                         }
                     }
                 }
@@ -90,7 +99,6 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostCo
     }
 }
 
-// ... (El resto de tu archivo, EstacionesTopBar y EstacionCardRediseñada, está perfecto y no necesita cambios)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EstacionesTopBar(
@@ -148,10 +156,8 @@ fun EstacionesTopBar(
     }
 }
 
-
-
 @Composable
-fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController) {
+fun EstacionCardRedisenada(estacion: Estacion, navController: NavHostController) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -173,11 +179,10 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                // Contenedor de la Línea (Simula la etiqueta azul)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Card(
                         shape = RoundedCornerShape(4.dp),
-                        colors = CardDefaults.cardColors(containerColor = ButtonColor) // 🟢 Usando el color del tema
+                        colors = CardDefaults.cardColors(containerColor = ButtonColor)
                     ) {
                         Text(
                             text = "Línea 1",
@@ -187,7 +192,6 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    // Distrito
                     Text(
                         text = estacion.distrito,
                         color = Color.Gray,
@@ -196,7 +200,6 @@ fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController
                 }
             }
 
-            // Icono de Ubicación a la derecha
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = "Ubicación",
