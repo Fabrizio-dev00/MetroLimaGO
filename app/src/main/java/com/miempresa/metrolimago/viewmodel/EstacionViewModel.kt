@@ -1,5 +1,6 @@
 package com.miempresa.metrolimago.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -7,21 +8,23 @@ import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.model.Ruta
 import com.miempresa.metrolimago.repository.EstacionRepository
 import com.miempresa.metrolimago.utils.RouteCalculator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import android.util.Log
 
 class EstacionViewModel(private val repository: EstacionRepository) : ViewModel() {
 
     private val _filtro = MutableStateFlow("")
-    val filtro: StateFlow<String> = _filtro
+    val filtro: StateFlow<String> = _filtro.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+    val error: StateFlow<String?> = _error.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val estaciones: StateFlow<List<Estacion>> = _filtro
         .flatMapLatest { nombre ->
             if (nombre.isEmpty()) repository.obtenerEstaciones()
@@ -29,9 +32,8 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private val _estacionesRemoto = MutableStateFlow<List<Estacion>>(emptyList())
 
-    fun insertar(estacion: Estacion) = viewModelScope.launch {
+    fun insertar(estacion: Estacion) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertar(estacion)
     }
 
@@ -39,39 +41,42 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
         _filtro.value = nombre
     }
 
-    fun cargarDesdeAPI() = viewModelScope.launch {
-        if (estaciones.value.isNotEmpty()) return@launch
-
-        _isLoading.value = true
-        _error.value = null
-
-        try {
-            val estacionesRemotas = repository.obtenerEstacionesRemotas()
-
-            if (estacionesRemotas.isNotEmpty()) {
-                val estacionesLocales = estacionesRemotas.map { remota ->
-                    Estacion(
-                        id = remota.id.toInt(),
-                        nombre = remota.nombre,
-                        linea = remota.linea,
-                        distrito = remota.distrito
-                    )
-                }
-
-                estacionesLocales.forEach { estacion ->
-                    repository.insertar(estacion)
-                }
-
-            } else {
-                _error.value = "La API devolvió una lista vacía. Verifique MockAPI."
+    fun cargarDesdeAPI() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repository.contarEstaciones() > 0) {
+                Log.d("EstacionViewModel", "La base de datos local ya contiene datos. No se cargará desde la API.")
+                return@launch
             }
 
-        } catch (e: Exception) {
-            Log.e("EstacionViewModel", "Error al cargar estaciones: ${e.message}")
-            _error.value = "Error de conexión: ${e.message}"
-            e.printStackTrace()
-        } finally {
-            _isLoading.value = false
+            _isLoading.value = true
+            _error.value = null
+
+            try {
+                val estacionesRemotas = repository.obtenerEstacionesRemotas()
+
+                if (estacionesRemotas.isNotEmpty()) {
+                    val estacionesLocales = estacionesRemotas.map { remota ->
+                        Estacion(
+                            id = remota.id.toInt(),
+                            nombre = remota.nombre,
+                            linea = remota.linea,
+                            distrito = remota.distrito
+                        )
+                    }
+                    repository.insertarTodas(estacionesLocales)
+                    Log.d("EstacionViewModel", "Se insertaron ${estacionesLocales.size} estaciones en la BD.")
+
+                } else {
+                    _error.value = "La API devolvió una lista vacía. Verifique MockAPI."
+                    Log.w("EstacionViewModel", "La API no devolvió estaciones.")
+                }
+
+            } catch (e: Exception) {
+                Log.e("EstacionViewModel", "Error al cargar estaciones desde la API: ${e.message}", e)
+                _error.value = "Error de conexión: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 

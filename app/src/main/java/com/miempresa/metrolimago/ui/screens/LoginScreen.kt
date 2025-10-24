@@ -50,24 +50,15 @@ fun LoginScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // 1. HEADER Y LOGO (Sección superior)
             Spacer(Modifier.height(80.dp))
 
-            // Reemplaza esto con tu ícono o logo de metro si tienes un ID de drawable
             Icon(
-                imageVector = Icons.Default.Person, // Reemplazar con el ícono del metro si lo tienes
+                imageVector = Icons.Default.Person,
                 contentDescription = "Metro Icon",
                 tint = Color.White,
                 modifier = Modifier.size(64.dp)
             )
-            // Si tienes un recurso de dibujo (por ejemplo, R.drawable.metro_icon):
-            /*
-            Image(
-                painter = painterResource(id = R.drawable.metro_icon),
-                contentDescription = "Metro Icon",
-                modifier = Modifier.size(64.dp)
-            )
-            */
+
 
             Spacer(Modifier.height(16.dp))
 
@@ -88,7 +79,6 @@ fun LoginScreen(navController: NavHostController) {
                 fontSize = 14.sp
             )
 
-            // 2. CONTENEDOR BLANCO PARA EL FORMULARIO
             Spacer(Modifier.height(40.dp))
 
             Card(
@@ -105,7 +95,6 @@ fun LoginScreen(navController: NavHostController) {
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Campo Correo Electrónico
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -116,7 +105,6 @@ fun LoginScreen(navController: NavHostController) {
                     )
                     Spacer(Modifier.height(16.dp))
 
-                    // Campo Contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -139,7 +127,6 @@ fun LoginScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Enlace Olvidaste Contraseña
                     Spacer(Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         TextButton(onClick = { /* Navegar a pantalla de recuperación */ }) {
@@ -149,10 +136,9 @@ fun LoginScreen(navController: NavHostController) {
 
                     Spacer(Modifier.height(24.dp))
 
-                    // Botón de INICIAR SESIÓN con validación
                     Button(
                         onClick = { navController.navigate("home") },
-                        enabled = isLoginEnabled, // 🟢 Habilitado solo si los campos no están vacíos
+                        enabled = isLoginEnabled,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
                     ) {

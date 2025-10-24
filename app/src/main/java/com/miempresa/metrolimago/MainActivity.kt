@@ -21,7 +21,10 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             MetroLimaDatabase::class.java,
             "metro_lima_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+            .build()
         val repository = EstacionRepository(db.estacionDao())
         EstacionViewModel.Factory(repository)
     }

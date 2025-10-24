@@ -1,7 +1,6 @@
 package com.miempresa.metrolimago.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,30 +12,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
-import com.miempresa.metrolimago.ui.theme.MetroGradient // Usamos el Gradiente de tu Theme.kt
+import com.miempresa.metrolimago.ui.theme.MetroGradient
+import com.miempresa.metrolimago.model.Ruta
+import com.miempresa.metrolimago.model.Estacion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostController) {
     val estaciones by viewModel.estaciones.collectAsState()
 
-    // Convertir la lista de estaciones a nombres de estaciones para los Dropdowns
     val nombresEstaciones = remember(estaciones) { estaciones.map { it.nombre } }
 
     var origen by remember { mutableStateOf("") }
     var destino by remember { mutableStateOf("") }
 
-    // Estado del resultado de la ruta (Ejemplo: Simular un resultado)
-    var rutaCalculada by remember { mutableStateOf<RutaResultado?>(null) }
+    var rutaCalculada by remember { mutableStateOf<Ruta?>(null) }
 
-    // Cargar las estaciones remotas si no están cargadas
     LaunchedEffect(Unit) {
         if (estaciones.isEmpty()) {
             viewModel.cargarDesdeAPI()
@@ -56,7 +53,6 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // 1. SELECTOR DE ORIGEN
             StationDropdown(
                 label = "Estación de origen",
                 currentSelection = origen,
@@ -66,16 +62,14 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. INTERCAMBIADOR DE RUTA (Ícono de doble flecha)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-8).dp), // Subir un poco para acercarlo a los campos
+                    .offset(y = (-8).dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 IconButton(
                     onClick = {
-                        // Intercambiar valores
                         val temp = origen
                         origen = destino
                         destino = temp
@@ -92,7 +86,6 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
                 }
             }
 
-            // 3. SELECTOR DE DESTINO
             StationDropdown(
                 label = "Estación de destino",
                 currentSelection = destino,
@@ -102,21 +95,11 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. BOTÓN CALCULAR RUTA
             val isButtonEnabled = origen.isNotBlank() && destino.isNotBlank() && origen != destino
             Button(
                 onClick = {
-                    // 🚨 Aquí debes llamar a tu RouteCalculator:
-                    // val resultado = RouteCalculator.calcularRuta(origen, destino, estaciones)
-                    // rutaCalculada = ResultadoRuta(tiempo = resultado.tiempo, pasos = resultado.pasos)
-
-                    // Simulación de Cálculo (reemplaza esto con la llamada real)
                     if(isButtonEnabled) {
-                        rutaCalculada = RutaResultado(
-                            tiempoEstimado = "18 min",
-                            distancia = "9.4 km",
-                            estacionesIntermedias = listOf("Cabitos", "Ayacucho", "Atocongo")
-                        )
+                        rutaCalculada = viewModel.calcularRuta(origen, destino, estaciones)
                     }
                 },
                 enabled = isButtonEnabled,
@@ -130,7 +113,6 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 5. TARJETA DE RESULTADO (Se muestra solo si rutaCalculada no es null)
             rutaCalculada?.let { resultado ->
                 ResultadoRutaCard(resultado)
             }
@@ -138,9 +120,6 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
     }
 }
 
-// -------------------------------------------------------------------------------------------------
-// COMPONENTES AUXILIARES
-// -------------------------------------------------------------------------------------------------
 
 @Composable
 fun PlanificadorTopBar(navController: NavHostController) {
@@ -183,16 +162,14 @@ fun StationDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    // Usamos ExposedDropdownMenuBox para el diseño limpio del Figma
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            // El campo de texto que siempre se muestra
-            value = currentSelection.ifEmpty { "" }, // Muestra el texto seleccionado
-            onValueChange = {}, // No se edita directamente
+            value = currentSelection.ifEmpty { "" },
+            onValueChange = {},
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -202,7 +179,6 @@ fun StationDropdown(
             shape = RoundedCornerShape(8.dp)
         )
 
-        // El menú desplegable que aparece
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
@@ -222,7 +198,7 @@ fun StationDropdown(
 }
 
 @Composable
-fun ResultadoRutaCard(resultado: RutaResultado) {
+fun ResultadoRutaCard(resultado: Ruta) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -236,34 +212,32 @@ fun ResultadoRutaCard(resultado: RutaResultado) {
             )
             Spacer(Modifier.height(16.dp))
 
-            // Tiempo y Distancia
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 InfoItem(
                     label = "Tiempo estimado",
-                    value = resultado.tiempoEstimado,
+                    value = "${resultado.tiempoMinutos} min",
                     modifier = Modifier.weight(1f)
                 )
                 InfoItem(
-                    label = "Distancia aproximada",
-                    value = resultado.distancia,
+                    label = "Detalle de Pasos",
+                    value = resultado.pasos,
                     modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
-            // Estaciones Intermedias
             Text(
-                text = "Estaciones intermedias:",
+                text = "Estaciones intermedias (${resultado.estaciones.size} paradas):",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = resultado.estacionesIntermedias.joinToString(", "),
+                text = resultado.estaciones.joinToString(", ") { it.nombre },
                 color = Color.Gray,
                 fontSize = 14.sp
             )
@@ -278,10 +252,3 @@ fun InfoItem(label: String, value: String, modifier: Modifier = Modifier) {
         Text(value, fontWeight = FontWeight.Bold, color = Color.Black)
     }
 }
-
-// Clase de datos para simular el resultado de tu RouteCalculator
-data class RutaResultado(
-    val tiempoEstimado: String,
-    val distancia: String,
-    val estacionesIntermedias: List<String>
-)
