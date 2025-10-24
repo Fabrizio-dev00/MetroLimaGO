@@ -60,7 +60,9 @@ class EstacionViewModel(private val repository: EstacionRepository) : ViewModel(
                             id = remota.id.toInt(),
                             nombre = remota.nombre,
                             linea = remota.linea,
-                            distrito = remota.distrito
+                            distrito = remota.distrito,
+                            horario = remota.horario,
+                            alerta = remota.alerta
                         )
                     }
                     repository.insertarTodas(estacionesLocales)
