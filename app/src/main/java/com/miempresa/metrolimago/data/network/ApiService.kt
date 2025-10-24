@@ -4,6 +4,6 @@ import retrofit2.http.GET
 import com.miempresa.metrolimago.model.EstacionRemota
 
 interface ApiService {
-    @GET("estaciones")
+    @GET("estaciones/")
     suspend fun obtenerEstacionesRemotas(): List<EstacionRemota>
 }

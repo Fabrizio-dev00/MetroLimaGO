@@ -14,6 +14,8 @@ import com.miempresa.metrolimago.ui.components.AlertsCard
 import com.miempresa.metrolimago.ui.components.HeaderSection
 import com.miempresa.metrolimago.ui.components.MainOptionsSection
 import com.miempresa.metrolimago.ui.components.ServiceInfoCard
+// 🟢 Importamos el componente TopBar
+import com.miempresa.metrolimago.ui.components.TopBar
 import com.miempresa.metrolimago.ui.theme.MetroLimaGOTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,6 +23,14 @@ import com.miempresa.metrolimago.ui.theme.MetroLimaGOTheme
 fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
+            // 🟢 Implementación del TopBar con la navegación
+            TopBar(
+                title = "MetroLima GO",
+                onSettingsClick = {
+                    // Navega a la ruta de configuración cuando se pulsa el ícono de engranaje
+                    navController.navigate("configuracion")
+                }
+            )
         }
     ) { paddingValues ->
         Column(
