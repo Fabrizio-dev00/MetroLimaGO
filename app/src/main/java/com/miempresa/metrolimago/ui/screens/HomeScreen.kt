@@ -5,31 +5,31 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.miempresa.metrolimago.ui.components.AlertsCard
-import com.miempresa.metrolimago.ui.components.HeaderSection
-import com.miempresa.metrolimago.ui.components.MainOptionsSection
-import com.miempresa.metrolimago.ui.components.ServiceInfoCard
-// 🟢 Importamos el componente TopBar
-import com.miempresa.metrolimago.ui.components.TopBar
+import com.miempresa.metrolimago.ui.components.*
 import com.miempresa.metrolimago.ui.theme.MetroLimaGOTheme
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    appViewModel: AppViewModel // 👈 Recibe el ViewModel global
+) {
+    // 🟢 Escuchamos el idioma actual
+    val isSpanish by appViewModel.isSpanish.collectAsState()
+
     Scaffold(
         topBar = {
-            // 🟢 Implementación del TopBar con la navegación
             TopBar(
-                title = "MetroLima GO",
-                onSettingsClick = {
-                    // Navega a la ruta de configuración cuando se pulsa el ícono de engranaje
-                    navController.navigate("configuracion")
-                }
+                title = appViewModel.getString("MetroLima GO", "MetroLima GO"),
+                onSettingsClick = { navController.navigate("configuracion") }
             )
         }
     ) { paddingValues ->
@@ -39,29 +39,48 @@ fun HomeScreen(navController: NavController) {
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            HeaderSection()
+            // --- Encabezado principal ---
+            HeaderSection(
+                title = appViewModel.getString("Bienvenido", "Welcome"),
+                subtitle = appViewModel.getString(
+                    "Planifica tu viaje de manera rápida y sencilla",
+                    "Plan your trip quickly and easily"
+                )
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            MainOptionsSection(navController = navController)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ServiceInfoCard()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AlertsCard()
+            // --- Sección principal de opciones ---
+            MainOptionsSection(
+                navController = navController,
+                appViewModel = appViewModel
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // --- Nueva sección de información de servicio ---
+            ServiceInfoCard(
+                title = appViewModel.getString("Información del servicio", "Service Information"),
+                subtitle = appViewModel.getString(
+                    "Conoce el estado de las líneas del Metro",
+                    "Check the current metro line status"
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- Nueva sección de alertas ---
+            AlertsCard(
+                title = appViewModel.getString("Alertas", "Alerts"),
+                subtitle = appViewModel.getString(
+                    "Revisa si hay interrupciones o mantenimiento",
+                    "Check for interruptions or maintenance"
+                )
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    MetroLimaGOTheme {
-        HomeScreen(navController = rememberNavController())
-    }
-}
+

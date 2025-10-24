@@ -1,15 +1,34 @@
 package com.miempresa.metrolimago.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.compose.material3.ColorScheme
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * ViewModel para manejar estados globales de la aplicación, como el idioma.
- * isSpanish: true -> Español, false -> Inglés
+ * ViewModel para manejar estados globales de la aplicación (Idioma y Tema).
  */
 class AppViewModel : ViewModel() {
-    // Usamos StateFlow para que la UI reaccione a los cambios de idioma
+
+    // --- Lógica de TEMA/Modo Oscuro ---
+
+    // Estado que indica si el tema oscuro está activo (true) o no (false).
+    private val _isDarkTheme = MutableStateFlow(false)
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
+
+    /**
+     * Establece el estado del tema oscuro.
+     */
+    fun setDarkTheme(isDark: Boolean) {
+        _isDarkTheme.value = isDark
+    }
+
+
+    // --- Lógica de IDIOMA ---
+
+    // Estado que indica si el idioma actual es Español (true) o Inglés (false).
+    // isSpanish: true -> Español, false -> Inglés
     private val _isSpanish = MutableStateFlow(true)
     val isSpanish: StateFlow<Boolean> = _isSpanish
 
@@ -21,10 +40,7 @@ class AppViewModel : ViewModel() {
     }
 
     /**
-     * Retorna la palabra correcta para un texto dado según el idioma actual.
-     * @param es El texto en español.
-     * @param en El texto en inglés.
-     * @return El texto que corresponde al idioma activo.
+     * Retorna la cadena de texto adecuada basada en el idioma actual.
      */
     fun getString(es: String, en: String): String {
         return if (_isSpanish.value) es else en

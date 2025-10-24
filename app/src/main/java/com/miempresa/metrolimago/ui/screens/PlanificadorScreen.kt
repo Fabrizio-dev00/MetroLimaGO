@@ -21,10 +21,11 @@ import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 import com.miempresa.metrolimago.ui.theme.MetroGradient
 import com.miempresa.metrolimago.model.Ruta
 import com.miempresa.metrolimago.model.Estacion
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostController) {
+fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostController, appViewModel: AppViewModel) {
     val estaciones by viewModel.estaciones.collectAsState()
 
     val nombresEstaciones = remember(estaciones) { estaciones.map { it.nombre } }

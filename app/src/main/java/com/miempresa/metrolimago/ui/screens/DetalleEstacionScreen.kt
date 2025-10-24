@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 
 @Composable
 fun DetalleEstacionScreen(
     nombreEstacion: String,
-    viewModel: EstacionViewModel
+    viewModel: EstacionViewModel,
+    appViewModel: AppViewModel
 ) {
     val estaciones by viewModel.estaciones.collectAsState(initial = emptyList())
     val estacion = estaciones.find { it.nombre == nombreEstacion }

@@ -15,32 +15,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.miempresa.metrolimago.viewmodel.AppViewModel // 🟢 Importamos el ViewModel
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfiguracionScreen(
     navController: NavHostController,
-    // 🟢 Recibe el ViewModel del sistema de navegación
-    appViewModel: AppViewModel = viewModel()
+    appViewModel: AppViewModel
 ) {
-    // 🟢 Observar el estado del idioma (true = Español, false = Inglés)
+    // 🟢 Observar estados globales
     val isSpanish by appViewModel.isSpanish.collectAsState()
-
-    // El modo oscuro se maneja localmente por ahora, pero idealmente debería ir en el ViewModel/Theme
-    var darkMode by remember { mutableStateOf(false) }
+    val isDarkTheme by appViewModel.isDarkTheme.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Configuración", color = Color.White) },
+                title = { Text(appViewModel.getString("Configuración", "Settings"), color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF6A5AE0)
                 ),
                 navigationIcon = {
-                    // Botón de regreso que usa la navegación de Compose
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -58,11 +53,15 @@ fun ConfiguracionScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-
             Spacer(Modifier.height(24.dp))
 
-            // --- 1. SECCIÓN APARIENCIA (Modo Oscuro) ---
-            Text("Apariencia", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+            // --- 1️⃣ APARIENCIA (Modo oscuro) ---
+            Text(
+                appViewModel.getString("Apariencia", "Appearance"),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(8.dp))
 
             Card(
@@ -84,23 +83,36 @@ fun ConfiguracionScreen(
                     )
                     Spacer(Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Modo oscuro", fontWeight = FontWeight.Medium)
-                        Text("Activa el tema oscuro", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(appViewModel.getString("Modo oscuro", "Dark Mode"), fontWeight = FontWeight.Medium)
+                        Text(
+                            appViewModel.getString("Activa el tema oscuro", "Enable dark theme"),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    Switch(checked = darkMode, onCheckedChange = { darkMode = it })
+                    // 🟢 Este switch SÍ controla el tema global
+                    Switch(
+                        checked = isDarkTheme,
+                        onCheckedChange = { appViewModel.setDarkTheme(it) }
+                    )
                 }
             }
 
             Spacer(Modifier.height(24.dp))
 
-            // --- 2. SECCIÓN IDIOMA ---
-            Text("Idioma", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+            // --- 2️⃣ IDIOMA ---
+            Text(
+                appViewModel.getString("Idioma", "Language"),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(8.dp))
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { appViewModel.toggleLanguage() }, // 🟢 Click para cambiar idioma
+                    .clickable { appViewModel.toggleLanguage() },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Row(
@@ -117,10 +129,16 @@ fun ConfiguracionScreen(
                     )
                     Spacer(Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Idioma", fontWeight = FontWeight.Medium)
-                        Text("Selecciona tu idioma preferido", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(appViewModel.getString("Idioma", "Language"), fontWeight = FontWeight.Medium)
+                        Text(
+                            appViewModel.getString(
+                                "Selecciona tu idioma preferido",
+                                "Select your preferred language"
+                            ),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    // Muestra el idioma actual
                     Text(
                         text = if (isSpanish) "Español" else "English",
                         fontWeight = FontWeight.Bold,
@@ -131,8 +149,13 @@ fun ConfiguracionScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // --- 3. SECCIÓN ACERCA DE ---
-            Text("Acerca de", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+            // --- 3️⃣ ACERCA DE ---
+            Text(
+                appViewModel.getString("Acerca de", "About"),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(8.dp))
 
             Card(
@@ -140,7 +163,6 @@ fun ConfiguracionScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Versión y Descripción
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Info,
@@ -153,30 +175,37 @@ fun ConfiguracionScreen(
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Aplicación de planificación de rutas del Metro de Lima",
+                        appViewModel.getString(
+                            "Aplicación de planificación de rutas del Metro de Lima",
+                            "Route planning app for the Lima Metro"
+                        ),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                    // Versión
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Versión", fontWeight = FontWeight.Medium)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(appViewModel.getString("Versión", "Version"), fontWeight = FontWeight.Medium)
                         Text("1.0.0", fontWeight = FontWeight.Bold)
                     }
 
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                    // Créditos
-                    Text("Créditos del Proyecto", fontWeight = FontWeight.Medium)
+                    Text(appViewModel.getString("Créditos del Proyecto", "Project Credits"), fontWeight = FontWeight.Medium)
                     Text(
-                        "Universidad Tecnológica del Perú",
+                        "Tecsup - Tecnología de la Producción",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "Desarrollado por el equipo de Desarrollo UTP",
+                        appViewModel.getString(
+                            "Desarrollado por el equipo de Tecsup",
+                            "Developed by the Tecsup team"
+                        ),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

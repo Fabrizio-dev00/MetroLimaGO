@@ -12,20 +12,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
-import com.miempresa.metrolimago.ui.theme.ButtonColor // Asegúrate de que este color esté definido
+import com.miempresa.metrolimago.ui.theme.ButtonColor
+import com.miempresa.metrolimago.viewmodel.AppViewModel // 👈 Importa el ViewModel
 
 @Composable
-fun MainOptionsSection(navController: NavController) {
+fun MainOptionsSection(
+    navController: NavController,
+    appViewModel: AppViewModel // 👈 Ahora recibe el viewmodel para manejar idioma
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Tarjeta de Estaciones
+        // 🟢 Tarjeta de Estaciones
         OptionCard(
-            title = "Estaciones",
-            subtitle = "Consulta todas las estaciones",
+            title = appViewModel.getString("Estaciones", "Stations"),
+            subtitle = appViewModel.getString("Consulta todas las estaciones", "Check all stations"),
             icon = Icons.Default.LocationOn,
             onClick = { navController.navigate("listaEstaciones") },
             modifier = Modifier.weight(1f)
@@ -33,10 +37,10 @@ fun MainOptionsSection(navController: NavController) {
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Tarjeta de Rutas
+        // 🟢 Tarjeta de Rutas
         OptionCard(
-            title = "Rutas",
-            subtitle = "Planifica tu recorrido",
+            title = appViewModel.getString("Rutas", "Routes"),
+            subtitle = appViewModel.getString("Planifica tu recorrido", "Plan your route"),
             icon = Icons.Default.SwapHoriz,
             onClick = { navController.navigate("planificador") },
             modifier = Modifier.weight(1f)
@@ -56,7 +60,7 @@ fun OptionCard(
         modifier = modifier
             .height(140.dp)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = BackgroundLight), // Usa un color de fondo claro
+        colors = CardDefaults.cardColors(containerColor = BackgroundLight),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -69,7 +73,7 @@ fun OptionCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = ButtonColor, // Usa tu color principal de botón/acento
+                tint = ButtonColor,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))

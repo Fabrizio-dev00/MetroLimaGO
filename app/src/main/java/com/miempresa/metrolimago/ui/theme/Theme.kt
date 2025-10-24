@@ -26,6 +26,7 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun MetroLimaGOTheme(
+    // ✅ Ahora tiene valor por defecto, así no da error en Previews ni en pantallas sin ViewModel
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -38,7 +39,7 @@ fun MetroLimaGOTheme(
     )
 }
 
-// Gradiente reutilizable
+// 🎨 Gradiente reutilizable
 val MetroGradient = Brush.verticalGradient(
     colors = listOf(PurpleGradientStart, PurpleGradientEnd)
 )

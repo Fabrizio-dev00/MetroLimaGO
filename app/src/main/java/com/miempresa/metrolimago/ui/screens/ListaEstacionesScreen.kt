@@ -23,11 +23,12 @@ import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
 import com.miempresa.metrolimago.ui.theme.ButtonColor
 import com.miempresa.metrolimago.ui.theme.MetroGradient
+import com.miempresa.metrolimago.viewmodel.AppViewModel
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController) {
+fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController, appViewModel: AppViewModel) {
 
     // 1. Recolectamos los estados del ViewModel. ¡Eso es todo lo que necesitamos!
     val estaciones by viewModel.estaciones.collectAsState() // <-- Esta lista ya viene filtrada por el ViewModel
