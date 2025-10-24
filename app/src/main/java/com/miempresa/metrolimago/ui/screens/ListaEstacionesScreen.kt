@@ -1,76 +1,90 @@
 package com.miempresa.metrolimago.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.miempresa.metrolimago.model.Estacion
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
+import com.miempresa.metrolimago.ui.theme.MetroGradient
+import com.miempresa.metrolimago.ui.theme.ButtonColor
+import com.miempresa.metrolimago.ui.theme.BackgroundLight
+import androidx.compose.material3.TextFieldDefaults
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaEstacionesScreen(viewModel: EstacionViewModel) {
+fun ListaEstacionesScreen(viewModel: EstacionViewModel, navController: NavHostController) {
 
-    val estaciones by viewModel.estacionesRemoto.collectAsState()
+    val estaciones by viewModel.estaciones.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-
     var filtro by remember { mutableStateOf("") }
 
-    // Cargar las estaciones remotas solo una vez
     LaunchedEffect(Unit) {
         viewModel.cargarDesdeAPI()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            EstacionesTopBar(
+                navController = navController,
+                filtro = filtro,
+                onFiltroChange = { filtro = it }
+            )
+        },
+        modifier = Modifier.background(BackgroundLight)
+    ) { paddingValues ->
 
-        Text(
-            text = "Estaciones del Metro de Lima 🚇",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        val listaFiltrada = estaciones.filter {
+            it.nombre.contains(filtro, ignoreCase = true) ||
+                    it.distrito.contains(filtro, ignoreCase = true)
+        }
 
-        // Campo de búsqueda
-        OutlinedTextField(
-            value = filtro,
-            onValueChange = { filtro = it },
-            label = { Text("Buscar estación...") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isLoading) {
-            // Mientras carga la API
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFF6A5AE0))
-            }
-        } else {
-            // Lista filtrada
-            val listaFiltrada = estaciones.filter {
-                it.nombre.contains(filtro, ignoreCase = true) ||
-                        it.distrito.contains(filtro, ignoreCase = true)
-            }
-
-            if (listaFiltrada.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No se encontraron estaciones 😢")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(
+                        color = ButtonColor,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
-            } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(listaFiltrada) { estacion ->
-                        EstacionCard(estacion)
+                listaFiltrada.isEmpty() && filtro.isEmpty() -> {
+                    Text("No se pudo cargar la lista de estaciones.", Modifier.align(Alignment.Center))
+                }
+                listaFiltrada.isEmpty() && filtro.isNotEmpty() -> {
+                    Text("No se encontraron estaciones con ese filtro 😢", Modifier.align(Alignment.Center))
+                }
+                else -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(listaFiltrada) { estacion ->
+                            EstacionCardRediseñada(estacion, navController)
+                        }
                     }
                 }
             }
@@ -78,20 +92,118 @@ fun ListaEstacionesScreen(viewModel: EstacionViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstacionCard(estacion: Estacion) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7F7)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+fun EstacionesTopBar(
+    navController: NavHostController,
+    filtro: String,
+    onFiltroChange: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MetroGradient)
+            .padding(bottom = 16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Atrás",
+                    tint = Color.White
+                )
+            }
             Text(
-                text = estacion.nombre,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                text = "Estaciones",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
             )
-            Text("Línea: ${estacion.linea}", color = Color.Gray)
-            Text("Distrito: ${estacion.distrito}", color = Color.Gray)
+        }
+
+        OutlinedTextField(
+            value = filtro,
+            onValueChange = onFiltroChange,
+            placeholder = { Text("Buscar estación...", color = Color.Gray) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = ButtonColor
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(56.dp)
+        )
+    }
+}
+
+
+
+@Composable
+fun EstacionCardRediseñada(estacion: Estacion, navController: NavHostController) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate("detalleEstacion/${estacion.nombre}")
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = estacion.nombre,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                // Contenedor de la Línea (Simula la etiqueta azul)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Card(
+                        shape = RoundedCornerShape(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = ButtonColor) // 🟢 Usando el color del tema
+                    ) {
+                        Text(
+                            text = "Línea 1",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // Distrito
+                    Text(
+                        text = estacion.distrito,
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            // Icono de Ubicación a la derecha
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = "Ubicación",
+                tint = Color.LightGray,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }

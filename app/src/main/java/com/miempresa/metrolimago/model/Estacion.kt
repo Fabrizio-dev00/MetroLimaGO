@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "estaciones")
 data class Estacion(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey
+    val id: Int,
     val nombre: String,
     val linea: String,
     val distrito: String

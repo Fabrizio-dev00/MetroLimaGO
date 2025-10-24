@@ -24,6 +24,8 @@ object RouteCalculator {
 
         val tiempo = abs(destinoIndex - origenIndex) * 2
 
-        return Ruta(rango, tiempo)
+        val pasosString = "${rango.size} estaciones / ${rango.size} paradas"
+
+        return Ruta(rango, tiempo, pasosString)
     }
 }

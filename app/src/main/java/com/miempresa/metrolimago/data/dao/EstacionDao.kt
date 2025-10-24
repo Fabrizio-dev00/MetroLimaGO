@@ -14,9 +14,8 @@ interface EstacionDao {
     fun obtenerEstaciones(): Flow<List<Estacion>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarEstaciones(vararg estaciones: Estacion)
+    suspend fun insertarEstaciones(vararg estacion: Estacion)
 
-    // 🔹 NUEVO: Insertar lista completa (para sincronización desde la API)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodas(estaciones: List<Estacion>)
 

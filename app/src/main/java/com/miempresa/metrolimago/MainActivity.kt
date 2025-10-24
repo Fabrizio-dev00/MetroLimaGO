@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             "metro_lima_db"
         ).build()
         val repository = EstacionRepository(db.estacionDao())
-        EstacionViewModel.Companion.Factory(repository) // ✅ O simplemente EstacionViewModel.Factory(repository)
+        EstacionViewModel.Factory(repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
