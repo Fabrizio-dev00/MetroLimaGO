@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.miempresa.metrolimago.R
-
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
@@ -59,6 +58,7 @@ fun LoginScreen(navController: NavHostController) {
                 tint = Color.White,
                 modifier = Modifier.size(64.dp)
             )
+
 
             Spacer(Modifier.height(16.dp))
 
@@ -146,16 +146,14 @@ fun LoginScreen(navController: NavHostController) {
                         Icon(imageVector = Icons.Default.Person, contentDescription = null, modifier = Modifier.padding(start = 8.dp))
                     }
 
-                    // Enlace Regístrate ← AQUÍ ESTÁ EL CAMBIO
+                    // Enlace Regístrate
                     Spacer(Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text("¿No tienes una cuenta? ")
-                        TextButton(onClick = {
-                            navController.navigate("registro")  // ← AGREGADO
-                        }) {
+                        TextButton(onClick = { /* Navegar a pantalla de registro */ }) {
                             Text("Regístrate", color = Color(0xFF6C63FF), fontWeight = FontWeight.Bold)
                         }
                     }
@@ -190,3 +188,4 @@ fun LoginScreen(navController: NavHostController) {
         }
     }
 }
+

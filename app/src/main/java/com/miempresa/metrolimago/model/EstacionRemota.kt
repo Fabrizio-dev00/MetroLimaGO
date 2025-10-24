@@ -4,9 +4,7 @@ data class EstacionRemota(
     val id: String,
     val nombre: String,
     val linea: String,
-    val distrito: String,
-    val horario: String = "06:00 - 22:00",  // Valor por defecto
-    val alerta: String = "Sin alertas"       // Valor por defecto
+    val distrito: String
 )
 
 // Función de mapeo seguro
@@ -16,7 +14,7 @@ fun EstacionRemota.toEstacion(): Estacion {
         nombre = nombre,
         linea = linea,
         distrito = distrito,
-        horario = horario,  // ← Ahora sí lo incluye
-        alerta = alerta     // ← Ahora sí lo incluye
+        alerta = alerta,
+        horario = horario
     )
 }

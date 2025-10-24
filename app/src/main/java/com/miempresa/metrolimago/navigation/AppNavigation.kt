@@ -7,63 +7,40 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.miempresa.metrolimago.ui.screens.*
-import com.miempresa.metrolimago.viewmodel.AppViewModel
 import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 
 @Composable
-fun AppNavigation(
-    viewModel: EstacionViewModel,
-    appViewModel: AppViewModel // ✅ Recibimos el ViewModel global
-) {
+fun AppNavigation(viewModel: EstacionViewModel) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
         startDestination = "login"
     ) {
-
-        // 🔹 Pantalla de login
+        // Pantalla de inicio de sesión
         composable("login") {
-            LoginScreen(navController = navController)
+            LoginScreen(navController)
         }
 
-        // 🔹 Pantalla de registro ← AGREGADO
-        composable("registro") {
-            RegistroScreen(navController = navController)
-        }
-
-        // 🔹 Pantalla principal
+        // Pantalla principal después del login
         composable("home") {
-            HomeScreen(
-                navController = navController,
-                appViewModel = appViewModel
-            )
+            HomeScreen(navController)
         }
 
-        // 🔹 Pantalla de mapa
+        // Mapa con estaciones
         composable("mapa") {
-            MapaScreen(navController = navController)
+            MapaScreen(navController)
         }
 
-        // 🔹 Lista de estaciones
+        // Lista de estaciones desde la base de datos
         composable("listaEstaciones") {
             ListaEstacionesScreen(
                 viewModel = viewModel,
-                navController = navController,
-                appViewModel = appViewModel // ✅ Se pasa también aquí
+                navController = navController
             )
         }
 
-        // 🔹 Planificador
-        composable("planificador") {
-            PlanificadorScreen(
-                viewModel = viewModel,
-                navController = navController,
-                appViewModel = appViewModel // ✅ También aquí
-            )
-        }
-
-        // 🔹 Detalle de estación
+        // Detalle de una estación seleccionada
         composable(
             route = "detalleEstacion/{nombre}",
             arguments = listOf(navArgument("nombre") { type = NavType.StringType })
@@ -71,17 +48,18 @@ fun AppNavigation(
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
             DetalleEstacionScreen(
                 nombreEstacion = nombre,
-                viewModel = viewModel,
-                appViewModel = appViewModel // ✅ Se agrega aquí también
+                viewModel = viewModel
             )
         }
 
-        // 🔹 Configuración (idioma y tema)
+        // Pantalla de configuración
         composable("configuracion") {
-            ConfiguracionScreen(
-                navController = navController,
-                appViewModel = appViewModel
-            )
+            ConfiguracionScreen(navController)
+        }
+
+        // Pantalla principal con navegación general
+        composable("principal") {
+            PantallaPrincipalScreen(navController)
         }
     }
 }

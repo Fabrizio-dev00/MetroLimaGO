@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.miempresa.metrolimago.model.Estacion
+import com.miempresa.metrolimago.model.RutaFavorita
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,4 +25,14 @@ interface EstacionDao {
 
     @Query("SELECT COUNT(*) FROM estaciones")
     suspend fun contarEstaciones(): Int
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarRutaFavorita(ruta: RutaFavorita)
+
+    @Query("SELECT * FROM rutas_favoritas ORDER BY id DESC")
+    fun obtenerRutasFavoritas(): Flow<List<RutaFavorita>>
+
+    @Query("DELETE FROM rutas_favoritas WHERE id = :rutaId")
+    suspend fun eliminarRutaFavorita(rutaId: Int)
 }

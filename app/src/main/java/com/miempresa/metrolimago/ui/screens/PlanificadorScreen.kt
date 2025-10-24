@@ -1,49 +1,68 @@
 package com.miempresa.metrolimago.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.miempresa.metrolimago.viewmodel.EstacionViewModel
+import com.miempresa.metrolimago.R
+import com.miempresa.metrolimago.ui.theme.ButtonColor
 import com.miempresa.metrolimago.ui.theme.MetroGradient
-import com.miempresa.metrolimago.model.Ruta
-import com.miempresa.metrolimago.model.Estacion
+import com.miempresa.metrolimago.viewmodel.EstacionViewModel
 import com.miempresa.metrolimago.viewmodel.AppViewModel
+
+data class ResultadoRuta(
+    val origen: String,
+    val destino: String,
+    val tiempoEstimadoMin: Int,
+    val distanciaKm: Double,
+    val numeroParadas: Int,
+    val estacionesIntermedias: List<String>,
+    val descripcion: String
+)
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostController, appViewModel: AppViewModel) {
     val estaciones by viewModel.estaciones.collectAsState()
-
     val nombresEstaciones = remember(estaciones) { estaciones.map { it.nombre } }
 
-    var origen by remember { mutableStateOf("") }
-    var destino by remember { mutableStateOf("") }
+    var origen by remember { mutableStateOf<String?>(null) }
+    var destino by remember { mutableStateOf<String?>(null) }
+    var rutaCalculada by remember { mutableStateOf<ResultadoRuta?>(null) }
 
-    var rutaCalculada by remember { mutableStateOf<Ruta?>(null) }
-
-    LaunchedEffect(Unit) {
-        if (estaciones.isEmpty()) {
-            viewModel.cargarDesdeAPI()
+    LaunchedEffect(nombresEstaciones) {
+        if (origen == null && nombresEstaciones.isNotEmpty()) {
+            origen = nombresEstaciones.first()
+        }
+        if (destino == null && nombresEstaciones.size > 1) {
+            destino = nombresEstaciones.last()
         }
     }
 
     Scaffold(
         topBar = { PlanificadorTopBar(navController) },
-        modifier = Modifier.background(Color(0xFFF0F0F5))
+        containerColor = Color.Transparent,
+        modifier = Modifier.background(MetroGradient)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -55,40 +74,34 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
         ) {
 
             StationDropdown(
-                label = "Estación de origen",
+                label = stringResource(R.string.origin_station_label),
                 currentSelection = origen,
                 options = nombresEstaciones,
                 onSelect = { origen = it }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = (-8).dp),
-                contentAlignment = Alignment.CenterEnd
+            IconButton(
+                onClick = {
+                    val temp = origen
+                    origen = destino
+                    destino = temp
+                    rutaCalculada = null
+                },
+                modifier = Modifier.size(40.dp)
             ) {
-                IconButton(
-                    onClick = {
-                        val temp = origen
-                        origen = destino
-                        destino = temp
-                    },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFFD3D3D3), RoundedCornerShape(8.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.SwapVert,
-                        contentDescription = "Intercambiar",
-                        tint = Color.Black.copy(alpha = 0.7f)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.SwapVert,
+                    contentDescription = stringResource(R.string.swap_stations_description),
+                    tint = Color.White
+                )
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             StationDropdown(
-                label = "Estación de destino",
+                label = stringResource(R.string.destination_station_label),
                 currentSelection = destino,
                 options = nombresEstaciones,
                 onSelect = { destino = it }
@@ -96,160 +109,143 @@ fun PlanificadorScreen(viewModel: EstacionViewModel, navController: NavHostContr
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            val isButtonEnabled = origen.isNotBlank() && destino.isNotBlank() && origen != destino
+            val isButtonEnabled = origen != null && destino != null && origen != destino
             Button(
                 onClick = {
-                    if(isButtonEnabled) {
-                        rutaCalculada = viewModel.calcularRuta(origen, destino, estaciones)
+                    if (isButtonEnabled) {
+                        rutaCalculada = viewModel.calcularRuta(origen!!, destino!!, estaciones)
                     }
                 },
                 enabled = isButtonEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ButtonColor,
+                    disabledContainerColor = Color.Gray.copy(alpha = 0.5f)
+                )
             ) {
-                Text("Calcular Ruta", color = Color.White, fontWeight = FontWeight.Bold)
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            rutaCalculada?.let { resultado ->
-                ResultadoRutaCard(resultado)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun PlanificadorTopBar(navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MetroGradient)
-            .padding(bottom = 16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Atrás",
-                    tint = Color.White
+                Text(
+                    stringResource(R.string.calculate_route_button),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
             }
-            Text(
-                text = "Planificar Ruta",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            AnimatedVisibility(visible = rutaCalculada != null) {
+                rutaCalculada?.let { resultado ->
+                    ResultadoRutaCard(resultado)
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun PlanificadorTopBar(navController: NavHostController) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.plan_route_title), color = Color.White, fontWeight = FontWeight.Bold) },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.content_description_back), tint = Color.White)
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun StationDropdown(
     label: String,
-    currentSelection: String,
+    currentSelection: String?,
     options: List<String>,
     onSelect: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            value = currentSelection.ifEmpty { "" },
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        ExposedDropdownMenu(
+    Column {
+        Text(label, color = Color.White.copy(alpha = 0.8f), style = MaterialTheme.typography.bodySmall)
+        Spacer(Modifier.height(4.dp))
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onExpandedChange = { expanded = !it }
         ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    text = { Text(selectionOption) },
-                    onClick = {
-                        onSelect(selectionOption)
-                        expanded = false
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                )
+            OutlinedTextField(
+                value = currentSelection ?: stringResource(R.string.select_station_placeholder),
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                // --- ¡LA CORRECCIÓN ESTÁ AQUÍ! ---
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    focusedContainerColor = Color.White.copy(0.9f),
+                    unfocusedContainerColor = Color.White.copy(0.9f)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+            ExposedDropdownMenu(expanded, { expanded = false }) {
+                options.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it) },
+                        onClick = { onSelect(it); expanded = false }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun ResultadoRutaCard(resultado: Ruta) {
+fun ResultadoRutaCard(resultado: ResultadoRuta) {
     Card(
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = Modifier.fillMaxWidth()
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Resultado de la Ruta",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF3F51B5)
-            )
-            Spacer(Modifier.height(16.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                InfoItem(
-                    label = "Tiempo estimado",
-                    value = "${resultado.tiempoMinutos} min",
-                    modifier = Modifier.weight(1f)
-                )
-                InfoItem(
-                    label = "Detalle de Pasos",
-                    value = resultado.pasos,
-                    modifier = Modifier.weight(1f)
-                )
+                Text(resultado.origen, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                Icon(Icons.Default.ArrowForward, contentDescription = stringResource(R.string.arrow_to_description), tint = Color.White)
+                Text(resultado.destino, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             }
-
             Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = "Estaciones intermedias (${resultado.estaciones.size} paradas):",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = resultado.estaciones.joinToString(", ") { it.nombre },
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                InfoItem(icon = Icons.Default.Timer, label = stringResource(R.string.duration_label), value = "~${resultado.tiempoEstimadoMin} min")
+                InfoItem(icon = Icons.Default.Route, label = stringResource(R.string.distance_label), value = "%.1f km".format(resultado.distanciaKm))
+                InfoItem(icon = Icons.Default.Subway, label = stringResource(R.string.stops_label), value = resultado.numeroParadas.toString())
+            }
+            Divider(Modifier.padding(vertical = 16.dp), color = Color.White.copy(alpha = 0.3f))
+            Text(stringResource(R.string.stations_on_route_label), color = Color.White, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            resultado.estacionesIntermedias.forEach {
+                Text("• $it", color = Color.White.copy(alpha = 0.9f), modifier = Modifier.padding(start = 8.dp))
+            }
         }
     }
 }
 
 @Composable
-fun InfoItem(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(label, color = Color.Gray, fontSize = 12.sp)
-        Text(value, fontWeight = FontWeight.Bold, color = Color.Black)
+fun InfoItem(icon: ImageVector, label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(28.dp))
+        Spacer(Modifier.height(4.dp))
+        Text(value, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(label, color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
     }
 }

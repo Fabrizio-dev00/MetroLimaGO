@@ -11,10 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
 
 @Composable
-fun ServiceInfoCard(
-    title: String,
-    subtitle: String
-) {
+fun ServiceInfoCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -22,8 +19,12 @@ fun ServiceInfoCard(
         colors = CardDefaults.cardColors(containerColor = BackgroundLight),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.Schedule,
                     contentDescription = "Horario",
@@ -31,15 +32,19 @@ fun ServiceInfoCard(
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Información del Servicio",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = subtitle, style = MaterialTheme.typography.bodyLarge)
+
+            Text(text = "Horario de atención", style = MaterialTheme.typography.bodyLarge)
             Text(
                 text = "Lunes a Domingo: 6:00 AM - 10:00 PM",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary // Color azul para destacar el horario
             )
         }
     }

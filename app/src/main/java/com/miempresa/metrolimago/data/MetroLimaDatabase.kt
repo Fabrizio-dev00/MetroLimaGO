@@ -6,10 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.miempresa.metrolimago.data.dao.EstacionDao
 import com.miempresa.metrolimago.model.Estacion
+import com.miempresa.metrolimago.model.RutaFavorita
 
-@Database(entities = [Estacion::class], version = 3, exportSchema = false)
+@Database(entities = [Estacion::class, RutaFavorita::class], version = 5, exportSchema = false)
 abstract class MetroLimaDatabase : RoomDatabase() {
-
     abstract fun estacionDao(): EstacionDao
 
     companion object {

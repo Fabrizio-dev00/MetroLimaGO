@@ -11,10 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.miempresa.metrolimago.ui.theme.BackgroundLight
 
 @Composable
-fun AlertsCard(
-    title: String,
-    subtitle: String
-) {
+fun AlertsCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -22,8 +19,12 @@ fun AlertsCard(
         colors = CardDefaults.cardColors(containerColor = BackgroundLight),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Alertas",
@@ -31,12 +32,16 @@ fun AlertsCard(
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Alertas y Notificaciones",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                text = subtitle,
+                text = "No hay alertas en este momento",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
