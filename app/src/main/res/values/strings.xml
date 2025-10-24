@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 👇👇👇 ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ AQUÍ 👇👇👇 -->
+    <string name="app_name">MetroLima GO</string>
+
+    <!-- Títulos de Sección -->
+    <string name="settings_title">Configuración</string>
+    <string name="appearance_section">Apariencia</string>
+    <string name="language_section">Idioma</string>
+    <string name="about_section">Acerca de</string>
+    <string name="account_section">Cuenta</string>
+
+    <!-- Contenido de Apariencia -->
+    <string name="dark_mode_title">Modo oscuro</string>
+    <string name="dark_mode_summary">Activa el tema oscuro</string>
+
+    <!-- Contenido de Idioma -->
+    <string name="language_title">Idioma</string>
+    <string name="language_summary">Selecciona tu idioma preferido</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+
+    <!-- Contenido de Acerca de -->
+    <string name="app_description">Aplicación de planificación de rutas del Metro de Lima</string>
+    <string name="version_title">Versión</string>
+    <string name="credits_title">Créditos del Proyecto</string>
+    <string name="credits_university">Universidad Tecnológica del Perú</string>
+    <string name="credits_dev_team">Desarrollado por el equipo de Desarrollo UTP</string>
+
+    <!-- Contenido de Cuenta -->
+    <string name="logout_button">Cerrar Sesión</string>
+
+    <!-- Contenido de Pantalla Principal -->
+    <string name="home_view_map_button">Ver mapa del Metro de Lima</string>
+    <string name="options_stations_title">Estaciones</string>
+    <string name="options_stations_subtitle">Consulta las estaciones</string>
+    <string name="options_routes_title">Rutas</string>
+    <string name="options_routes_subtitle">Planifica tu recorrido</string>
+
+    <!-- Descripciones de contenido (para accesibilidad) -->
+    <string name="content_description_back">Volver</string>
+    <string name="settings_content_description">Configuración</string>
+
+    <!-- ... tus otros strings ... -->
+
+    <!-- Contenido de Home Screen (Adicional) -->
+    <string name="service_info_title">Tiempo de Servicio</string>
+    <string name="service_info_hours">05:00 am - 10:00 pm</string>
+    <string name="service_info_days">Lunes a Domingo</string>
+    <string name="alerts_title">Notificaciones</string>
+    <string name="alerts_subtitle">Estado del servicio</string>
+    <string name="alerts_status_good">NORMAL</string>
+    <string name="alerts_status_good_description">Todas las estaciones están operativas.</string>
+
+    <!-- Contenido de Login y Registro -->
+    <string name="welcome_to">Bienvenido a</string>
+    <string name="app_subtitle">Planifica tus viajes en el Metro de Lima</string>
+    <string name="email_label">Correo electrónico</string>
+    <string name="password_label">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="register_button">Regístrate</string>
+    <string name="guest_button">Continuar como invitado</string>
+    <string name="create_account_title">Crear Cuenta</string>
+    <string name="confirm_password_label">Confirmar Contraseña</string>
+    <string name="header_welcome">Bienvenido</string>
+    <string name="header_subtitle">Planifica tu viaje de manera rápida y sencilla</string>
+    <!-- Contenido de Planificador de Ruta -->
+    <string name="plan_route_title">Planificar Ruta</string>
+    <string name="origin_station_label">Estación de Origen</string>
+    <string name="destination_station_label">Estación de Destino</string>
+    <string name="select_station_placeholder">Seleccionar…</string>
+    <string name="swap_stations_description">Intercambiar estaciones</string>
+    <string name="calculate_route_button">Calcular Ruta</string>
+    <string name="arrow_to_description">a</string>
+    <string name="duration_label">Duración</string>
+    <string name="distance_label">Distancia</string>
+    <string name="stops_label">Paradas</string>
+    <string name="stations_on_route_label">Estaciones en tu ruta:</string>
+
+</resources>

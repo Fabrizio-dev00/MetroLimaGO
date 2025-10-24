@@ -1,0 +1,7 @@
+ECHO est  activado.
+
+.idea/
+.gradle/
+build/
+local.properties
+*.iml

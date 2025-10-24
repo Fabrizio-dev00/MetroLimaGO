@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MetroLima GO</string>
+
+    <!-- Section Titles -->
+    <string name="settings_title">Settings</string>
+    <string name="appearance_section">Appearance</string>
+    <string name="language_section">Language</string>
+    <string name="about_section">About</string>
+    <string name="account_section">Account</string>
+
+    <!-- Appearance Content -->
+    <string name="dark_mode_title">Dark Mode</string>
+    <string name="dark_mode_summary">Enable the dark theme</string>
+
+    <!-- Language Content -->
+    <string name="language_title">Language</string>
+    <string name="language_summary">Select your preferred language</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+
+    <!-- About Content -->
+    <string name="app_description">Lima Metro route planning application</string>
+    <string name="version_title">Version</string>
+    <string name="credits_title">Project Credits</string>
+    <string name="credits_university">Technological University of Peru</string>
+    <string name="credits_dev_team">Developed by the UTP Development team</string>
+
+    <!-- Account Content -->
+    <string name="logout_button">Log Out</string>
+
+    <!-- 👇👇👇 COPIA Y PEGA ESTE NUEVO BLOQUE AQUÍ 👇👇👇 -->
+
+    <!-- Home Screen Content -->
+    <string name="home_view_map_button">View Lima Metro map</string>
+    <string name="options_stations_title">Stations</string>
+    <string name="options_stations_subtitle">Check the stations</string>
+    <string name="options_routes_title">Routes</string>
+    <string name="options_routes_subtitle">Plan your trip</string>
+
+    <!-- 👆👆👆 FIN DEL NUEVO BLOQUE 👆👆👆 -->
+
+
+    <!-- Content Descriptions (for accessibility) -->
+    <string name="content_description_back">Back</string>
+    <string name="settings_content_description">Settings</string>
+
+    <!-- ... your other strings ... -->
+
+    <!-- Home Screen Content (Additional) -->
+    <string name="service_info_title">Service Hours</string>
+    <string name="service_info_hours">05:00 am - 10:00 pm</string>
+    <string name="service_info_days">Monday to Sunday</string>
+    <string name="alerts_title">Notifications</string>
+    <string name="alerts_subtitle">Service Status</string>
+    <string name="alerts_status_good">NORMAL</string>
+    <string name="alerts_status_good_description">All stations are operational.</string>
+
+    <!-- Login and Register Content -->
+    <string name="welcome_to">Welcome to</string>
+    <string name="app_subtitle">Plan your trips on the Lima Metro</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="login_button">Log In</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="register_button">Sign Up</string>
+    <string name="guest_button">Continue as guest</string>
+    <string name="create_account_title">Create Account</string>
+    <string name="confirm_password_label">Confirm Password</string>
+    <!-- Header Content (Home Screen) -->
+    <string name="header_welcome">Welcome</string>
+    <string name="header_subtitle">Plan your trip quickly and easily</string>
+    <!-- Route Planner Content -->
+    <string name="plan_route_title">Plan Route</string>
+    <string name="origin_station_label">Origin Station</string>
+    <string name="destination_station_label">Destination Station</string>
+    <string name="select_station_placeholder">Select…</string>
+    <string name="swap_stations_description">Swap stations</string>
+    <string name="calculate_route_button">Calculate Route</string>
+    <string name="arrow_to_description">to</string>
+    <string name="duration_label">Duration</string>
+    <string name="distance_label">Distance</string>
+    <string name="stops_label">Stops</string>
+    <string name="stations_on_route_label">Stations on your route:</string>
+
+</resources>
